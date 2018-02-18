@@ -1,9 +1,8 @@
 'use strict';
-
-var path = require('path');
-var assert = require('yeoman-generator').assert;
-var helpers = require('yeoman-generator').test;
-var fs = require('fs');
+const path = require('path');
+const assert = require('yeoman-assert');
+const helpers = require('yeoman-test');
+const fs = require('fs');
 
 describe('karma-esri:app', function () {
   var prompt = {
@@ -11,23 +10,19 @@ describe('karma-esri:app', function () {
     testFramework: 'Mocha',
     browsers: ['Chrome', 'Firefox', 'IE']
   };
-  before(function (done) {
-    var deps = [
+  before(function () {
+    const deps = [
       [helpers.createDummyGenerator(), 'karma:app']
     ];
-    helpers.run(path.join(__dirname, '../app'))
-      // generator-karma needs package.json to run
-      // so copy dummy package.json to test directory
-      // TODO: should also test that err is shown if no package.json
-      .inTmpDir(function(dir) {
-        var sourceFile = path.join(__dirname, '_package.json');
-        var targetFile = path.join(dir, 'package.json');
-        fs.writeFileSync(targetFile, fs.readFileSync(sourceFile));
+    return helpers.run(path.join(__dirname, '../app'))
+      .inTmpDir(function (dir) {
+          var sourceFile = path.join(__dirname, '_package.json');
+          var targetFile = path.join(dir, 'package.json');
+          fs.writeFileSync(targetFile, fs.readFileSync(sourceFile));
       })
       .withOptions({ 'skip-install': true })
-      .withPrompt(prompt)
-      .withGenerators(deps)
-      .on('end', done);
+      .withPrompts(prompt)
+      .withGenerators(deps);
   });
 
   it('copies files', function () {
